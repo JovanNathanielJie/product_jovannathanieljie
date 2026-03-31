@@ -198,3 +198,38 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
+// JAWABAN PERTANYAAN ANALISIS (WAJIB)
+// 1. Jelaskan alur data dari ApiService hingga tampil di ListView.
+// Alur data dimulai ketika aplikasi flutter ‘Product’ pertama kali dijalankan. 
+// Di dalam initState() HomePage, terdapat method _apiService.getAllProducts() 
+// dipanggil yang mengirimkan HTTP GET request ke endpoint API https://fakestoreapi.com/products. 
+// Setelah menerima response dengan status code 200, ApiService melakukan parsing JSON response menggunakan jsonDecode(), 
+// kemudian melakukan proses konversi setiap elemen JSON menjadi objek Product dengan mappingnya masing-masing atribut dari 
+// Product (id, title, price, category, image, dan rating). 
+// Hasil konversi ini dikembalikan sebagai List<Product> (dalam bentuk Array / List).
+
+// Ketika Future selesai, setState() dipicu dan data yang diterima disimpan ke dalam dua variabel state, 
+// yaitu _allProducts (yang dimana berupa data lengkap dari API) dan _filteredProducts (yang dimana awalnya sama dengan _allProducts). 
+// Kemudian, di method build() pada halaman home_page.dart, FutureBuilder memantau state Future tersebut. 
+// Ketika state adalah ConnectionState.waiting, akan tampil sebuah loading indicator. 
+// Setelah data diterima, FutureBuilder akan menampilkan ListView. 
+// Di dalam ListView.builder, variabel displayedProducts menentukan list mana yang akan ditampilkan. 
+// Jika filter aktif (_isFiltering == true), maka _filteredProducts yang ditampilkan, 
+// jika tidak maka _allProducts yang justru akan ditampilkan. 
+// Untuk setiap item dalam displayedProducts, method _buildProductCard() akan membangun sebuah Card widget yang menampilkan gambar produk 
+// (dengan Image.network), kategori, judul (dengan bantuan fungsi getShortTitle() yang dimana akan menampilkan judul maksimum 35 karakter, 
+// selebihnya akan terpotong), harga, dan rating dalam layout yang rapi menggunakan Row dan Column.
+
+// 2. Mengapa kita perlu memisahkan list data asli dan list data yang ditampilkan saat melakukan filter?
+// Kita perlu memisahkan list data asli dan list data yang ditampilkan saat melakukan filter sebab 
+// untuk menjaga integritas data dan efisiensi performa aplikasi, terutama ketika aplikasi berjalan. 
+// Ketika user melakukan filter, misalnya dengan menekan tombol filter untuk menampilkan hanya produk kategori "electronics", 
+// kondisi dalam _toggleFilter() akan membuat _filteredProducts hanya berisi produk-produk yang memenuhi criteria filter tersebut. 
+// Jika hanya menggunakan satu list, ketika user menekan tombol filter lagi untuk menonaktifkan filter, 
+// kita tidak akan memiliki cara untuk mengembalikan data ke kondisi aslinya karena 
+// data yang sudah difilter telah menghapus produk-produk lainnya dan tidak bisa lagi diambil kembali dari list tersebut. 
+// Dengan memisahkan keduanya, _allProducts selalu menyimpan semua data asli utuh dari API yang tidak pernah dimodifikasi, sehingga 
+// setiap kali user toggle filter, kita dapat dengan mudah melakukan re-filtering dari _allProducts tanpa perlu melakukan API request ulang. 
+// Ini juga membuat aplikasi lebih responsif dan efisien secara performa, karena proses filtering yang hanya melibatkan 
+// operasi lokal jauh lebih cepat dibanding fetch data dari network.
